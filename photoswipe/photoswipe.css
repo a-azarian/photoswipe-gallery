@@ -1,125 +1,63 @@
-body {
-  text-align: center;
-  background: #000;
-  overflow: hidden;
-  margin: 0;
-}
+/* photoswipe.css - نسخه پایه برای استایل گالری */
 
-.slider-container {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  position: relative;
-  overflow: hidden;
-}
-
-.slides {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-}
-
-.slides img {
-  width: auto;
-  height: 85vh; /* بزرگتر ولی نه تمام‌قد */
-  display: none;
-  object-fit: contain;
-  transition: transform 0.3s ease-in-out;
-  z-index: 1;
-}
-
-.controls {
-  position: absolute;
-  bottom: 2%;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 15px;
-  z-index: 2;
-}
-
-.controls button,
-.prev,
-.next {
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  cursor: pointer;
-  padding: 10px 14px;
-  font-size: 20px;
-  border-radius: 8px;
-  transition: background 0.3s ease, transform 0.1s ease;
-}
-
-.controls button:hover,
-.prev:hover,
-.next:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.prev {
-  position: absolute;
-  left: 3%;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-.next {
-  position: absolute;
-  right: 3%;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-.start-screen {
-  position: absolute;
+.pswp {
+  position: fixed;
+  z-index: 1500;
+  outline: none;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: black;
-  display: none;
-  align-items: center;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.pswp__bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  opacity: 0.9;
+}
+
+.pswp__scroll-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.pswp__container {
+  display: flex;
   justify-content: center;
-  z-index: 10;
+  align-items: center;
+  height: 100%;
+  width: 100%;
 }
 
-.start-button {
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
-  padding: 16px 32px;
-  border: none;
-  border-radius: 10px;
-  font-size: 22px;
-  cursor: pointer;
-  transition: background 0.3s ease;
+.pswp__item {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-backface-visibility: hidden;
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.start-button:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.blue-text {
-  color: #00aaff; /* آبی روشن - قابل تغییر */
-}
-
-body:not(.visible-controls) .controls,
-body:not(.visible-controls) .prev,
-body:not(.visible-controls) .next {
-  opacity: 0;
-  transition: opacity 0.5s ease;
-}
-
-body.visible-controls .controls,
-body.visible-controls .prev,
-body.visible-controls .next {
-  opacity: 1;
+.pswp__item img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: 100%;
+  max-height: 100%;
+  transform: translate(-50%, -50%);
+  user-select: none;
+  pointer-events: none;
 }
