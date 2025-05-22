@@ -1,30 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>My Portfolio Gallery</title>
-  <link rel="stylesheet" href="photoswipe.css" />
-  <link rel="stylesheet" href="default-skin/default-skin.css" />
-  <script type="module" src="photoswipe-lightbox.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PhotoSwipe 5 Gallery</title>
+<link rel="stylesheet" href="photoswipe/photoswipe.css" />
+<style>
+  body {
+    background: #000;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+  }
+  #gallery a {
+    margin: 5px;
+    display: inline-block;
+  }
+  #gallery img {
+    width: 150px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 2px solid #00aaff;
+    transition: border-color 0.3s ease;
+  }
+  #gallery img:hover {
+    border-color: #0088cc;
+  }
+</style>
 </head>
 <body>
 
-<div id="gallery--native-fs" class="gallery">
-  <!-- لینک‌ها به عکس‌ها -->
-  <!-- نمونه 3 عکس، بقیه رو مشابه بساز -->
-  <a href="images/img001.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
-    <img src="images/img001-thumb.jpg" alt="Project 1" />
+<div id="gallery">
+  <a href="images/img1.jpg" data-pswp-width="1200" data-pswp-height="800">
+    <img src="images/thumbs/img1.jpg" alt="Image 1" />
   </a>
-  <a href="images/img002.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
-    <img src="images/img002-thumb.jpg" alt="Project 2" />
+  <a href="images/img2.jpg" data-pswp-width="1200" data-pswp-height="800">
+    <img src="images/thumbs/img2.jpg" alt="Image 2" />
   </a>
-  <a href="images/img003.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
-    <img src="images/img003-thumb.jpg" alt="Project 3" />
-  </a>
-  <!-- تا 98 عکس ادامه بده -->
+  <!-- عکس‌های بیشتر به همین شکل -->
 </div>
 
-<script type="module" src="your-photoswipe-script.js"></script>
+<script type="module">
+  import PhotoSwipeLightbox from './photoswipe/photoswipe-lightbox.esm.js';
+  import PhotoSwipe from './photoswipe/photoswipe.esm.js';
+
+  const lightbox = new PhotoSwipeLightbox({
+    gallery: '#gallery',
+    children: 'a',
+    pswpModule: () => Promise.resolve(PhotoSwipe),
+  });
+
+  lightbox.init();
+</script>
 
 </body>
 </html>
