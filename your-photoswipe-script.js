@@ -1,95 +1,91 @@
-let index = 0;
-const images = document.querySelectorAll(".slides img");
-let zoomed = false;
-let hideControlsTimer = null;
+import PhotoSwipeLightbox from './photoswipe-lightbox.js';
 
-const allControls = document.querySelector(".controls");
-const navButtons = document.querySelectorAll(".prev, .next");
+const fullscreenAPI = getFullscreenAPI();
 
-// نمایش اسلاید مشخص
-function showSlide(i) {
-  images.forEach((img, idx) => {
-    img.style.display = idx === i ? "block" : "none";
-    img.style.transform = "scale(1)";
+const pswpContainer = getContainer();
+
+function getFullscreenPromise() {
+  return new Promise((resolve) => {
+    if (!fullscreenAPI || fullscreenAPI.isFullscreen()) {
+      resolve();
+      return;
+    }
+
+    document.addEventListener(fullscreenAPI.change, () => {
+      pswpContainer.style.display = 'block';
+      setTimeout(() => resolve(), 300);
+    }, { once: true });
+
+    fullscreenAPI.request(pswpContainer);
   });
-  zoomed = false;
-
-  if (i === 0) {
-    allControls.style.display = "none";
-    navButtons.forEach(btn => btn.style.display = "none");
-    document.querySelector(".start-screen").style.display = "flex";
-  } else {
-    allControls.style.display = "flex";
-    navButtons.forEach(btn => btn.style.display = "block");
-    document.querySelector(".start-screen").style.display = "none";
-  }
 }
 
-// شروع نمایش
-function startPresentation() {
-  const elem = document.documentElement;
-  elem.requestFullscreen().catch(err => console.error("Fullscreen failed:", err));
-  index = 1;
-  showSlide(index);
-}
+const lightbox = new PhotoSwipeLightbox({
+  gallery: '#gallery--native-fs',
+  children: 'a',
+  pswpModule: () => import('./photoswipe.esm.js'),
+  openPromise: getFullscreenPromise,
+  appendToEl: fullscreenAPI ? pswpContainer : document.body,
+  showAnimationDuration: 0,
+  hideAnimationDuration: 0,
+  preloadFirstSlide: false
+});
 
-// اسلاید بعدی
-function nextSlide() {
-  index = (index + 1) % images.length;
-  showSlide(index);
-}
-
-// اسلاید قبلی
-function prevSlide() {
-  index = (index - 1 + images.length) % images.length;
-  showSlide(index);
-}
-
-// زوم در (1.5x)
-function zoomIn() {
-  if (!zoomed) {
-    images[index].style.transform = "scale(1.5)";
-    zoomed = true;
-  }
-}
-
-// زوم بیرون (1x)
-function zoomOut() {
-  if (zoomed) {
-    images[index].style.transform = "scale(1)";
-    zoomed = false;
-  }
-}
-
-// تغییر حالت تمام صفحه
-function toggleFullscreen() {
-  const elem = document.documentElement;
-  if (!document.fullscreenElement) {
-    elem.requestFullscreen().catch(err =>
-      console.error("Fullscreen failed:", err)
-    );
-  } else {
-    document.exitFullscreen();
-  }
-}
-
-// خروج از تمام صفحه با Escape
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && document.fullscreenElement) {
-    document.exitFullscreen();
+lightbox.on('close', () => {
+  pswpContainer.style.display = 'none';
+  if (fullscreenAPI && fullscreenAPI.isFullscreen()) {
+    fullscreenAPI.exit();
   }
 });
 
-// نمایش کنترل‌ها با حرکت موس
-function showControlsTemporarily() {
-  document.body.classList.add("visible-controls");
-  if (hideControlsTimer) clearTimeout(hideControlsTimer);
-  hideControlsTimer = setTimeout(() => {
-    document.body.classList.remove("visible-controls");
-  }, 3000);
+lightbox.init();
+
+function getFullscreenAPI() {
+  let enterFS, exitFS, elementFS, changeEvent, errorEvent;
+
+  if (document.documentElement.requestFullscreen) {
+    enterFS = 'requestFullscreen';
+    exitFS = 'exitFullscreen';
+    elementFS = 'fullscreenElement';
+    changeEvent = 'fullscreenchange';
+    errorEvent = 'fullscreenerror';
+  } else if (document.documentElement.webkitRequestFullscreen) {
+    enterFS = 'webkitRequestFullscreen';
+    exitFS = 'webkitExitFullscreen';
+    elementFS = 'webkitFullscreenElement';
+    changeEvent = 'webkitfullscreenchange';
+    errorEvent = 'webkitfullscreenerror';
+  }
+
+  if (enterFS) {
+    return {
+      request(el) {
+        if (enterFS === 'webkitRequestFullscreen') {
+          el[enterFS](Element.ALLOW_KEYBOARD_INPUT);
+        } else {
+          el[enterFS]();
+        }
+      },
+      exit() {
+        return document[exitFS]();
+      },
+      isFullscreen() {
+        return document[elementFS];
+      },
+      change: changeEvent,
+      error: errorEvent
+    };
+  }
+
+  return null;
 }
 
-document.addEventListener("mousemove", showControlsTemporarily);
-
-// نمایش اسلاید اول در شروع
-showSlide(index);
+function getContainer() {
+  const container = document.createElement('div');
+  container.style.background = '#000';
+  container.style.width = '100%';
+  container.style.height = '100%';
+  container.style.display = 'none';
+  document.body.appendChild(container);
+  return container;
+}
