@@ -2,20 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Photoswipe Gallery</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>My Portfolio Gallery</title>
+  <link rel="stylesheet" href="photoswipe.css" />
+  <link rel="stylesheet" href="default-skin/default-skin.css" />
+  <script type="module" src="photoswipe-lightbox.js"></script>
 </head>
 <body>
-  <div class="pswp-gallery">
-    <a href="images/photo1.jpg" data-pswp-width="1200" data-pswp-height="800" target="_blank">
-      <img src="images/photo1_thumb.jpg" alt="Photo 1" />
-    </a>
-    <a href="images/photo2.jpg" data-pswp-width="1200" data-pswp-height="800" target="_blank">
-      <img src="images/photo2_thumb.jpg" alt="Photo 2" />
-    </a>
-  </div>
-  <script src="https://unpkg.com/photoswipe@5/dist/photoswipe-lightbox.esm.min.js" type="module"></script>
-  <script type="module" src="script.js"></script>
+
+<div id="gallery--native-fs" class="gallery">
+  <!-- لینک‌ها به عکس‌ها -->
+  <!-- نمونه 3 عکس، بقیه رو مشابه بساز -->
+  <a href="images/img001.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
+    <img src="images/img001-thumb.jpg" alt="Project 1" />
+  </a>
+  <a href="images/img002.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
+    <img src="images/img002-thumb.jpg" alt="Project 2" />
+  </a>
+  <a href="images/img003.jpg" data-pswp-width="1200" data-pswp-height="900" target="_blank">
+    <img src="images/img003-thumb.jpg" alt="Project 3" />
+  </a>
+  <!-- تا 98 عکس ادامه بده -->
+</div>
+
+<script type="module" src="your-photoswipe-script.js"></script>
+
 </body>
 </html>
