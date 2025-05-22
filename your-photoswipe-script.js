@@ -89,3 +89,35 @@ function getContainer() {
   document.body.appendChild(container);
   return container;
 }
+function openFullscreen() {
+  const elem = document.documentElement;
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  } else if (elem.webkitRequestFullscreen) { /* Safari */
+    elem.webkitRequestFullscreen();
+  } else if (elem.msRequestFullscreen) { /* IE11 */
+    elem.msRequestFullscreen();
+  }
+}
+
+function handleOrientationChange() {
+  // اگر حالت گوشی افقی شد (landscape)
+  if(window.matchMedia("(orientation: landscape)").matches) {
+    openFullscreen();
+  } else {
+    // اگر حالت عمودی شد و فول‌اسکرین بود، خارج شو
+    if (document.fullscreenElement || document.webkitFullscreenElement) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    }
+  }
+}
+
+// هنگام بارگذاری صفحه
+window.addEventListener('load', handleOrientationChange);
+// هنگام تغییر جهت صفحه
+window.addEventListener('orientationchange', handleOrientationChange);
+window.addEventListener('resize', handleOrientationChange);
