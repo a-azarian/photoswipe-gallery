@@ -1,95 +1,54 @@
-let index = 0;
-const images = document.querySelectorAll(".slides img");
-let zoomed = false;
-let hideControlsTimer = null;
+// photoswipe-lightbox.js - اسکریپت ساده راه‌اندازی PhotoSwipe Lightbox
 
-const allControls = document.querySelector(".controls");
-const navButtons = document.querySelectorAll(".prev, .next");
+import PhotoSwipe from './photoswipe.esm.js';
 
-// نمایش اسلاید مشخص
-function showSlide(i) {
-  images.forEach((img, idx) => {
-    img.style.display = idx === i ? "block" : "none";
-    img.style.transform = "scale(1)";
-  });
-  zoomed = false;
+export default class PhotoSwipeLightbox {
+  constructor(options) {
+    this.gallerySelector = options.gallery;
+    this.childrenSelector = options.children || 'a';
+    this.pswpModule = options.pswpModule;
+    this.appendToEl = options.appendToEl || document.body;
+    this.openPromise = options.openPromise;
+    this.showAnimationDuration = options.showAnimationDuration || 0;
+    this.hideAnimationDuration = options.hideAnimationDuration || 0;
+    this.lightbox = null;
+    this.init();
+  }
 
-  if (i === 0) {
-    allControls.style.display = "none";
-    navButtons.forEach(btn => btn.style.display = "none");
-    document.querySelector(".start-screen").style.display = "flex";
-  } else {
-    allControls.style.display = "flex";
-    navButtons.forEach(btn => btn.style.display = "block");
-    document.querySelector(".start-screen").style.display = "none";
+  async init() {
+    this.pswp = await this.pswpModule();
+    this.bindEvents();
+  }
+
+  bindEvents() {
+    const gallery = document.querySelector(this.gallerySelector);
+    if (!gallery) return;
+
+    gallery.addEventListener('click', async (e) => {
+      const target = e.target.closest(this.childrenSelector);
+      if (!target) return;
+
+      e.preventDefault();
+      await this.open(target.href);
+    });
+  }
+
+  async open(url) {
+    if (this.openPromise) {
+      await this.openPromise();
+    }
+
+    this.lightbox = new this.pswp({
+      gallery: document.querySelector(this.gallerySelector),
+      children: this.childrenSelector,
+      pswpModule: () => import('./photoswipe.esm.js'),
+      index: Array.from(document.querySelectorAll(this.gallerySelector + ' ' + this.childrenSelector)).findIndex(el => el.href === url),
+      showAnimationDuration: this.showAnimationDuration,
+      hideAnimationDuration: this.hideAnimationDuration,
+      appendToEl: this.appendToEl,
+    });
+
+    this.lightbox.init();
+    this.lightbox.loadAndOpen();
   }
 }
-
-// شروع نمایش
-function startPresentation() {
-  const elem = document.documentElement;
-  elem.requestFullscreen().catch(err => console.error("Fullscreen failed:", err));
-  index = 1;
-  showSlide(index);
-}
-
-// اسلاید بعدی
-function nextSlide() {
-  index = (index + 1) % images.length;
-  showSlide(index);
-}
-
-// اسلاید قبلی
-function prevSlide() {
-  index = (index - 1 + images.length) % images.length;
-  showSlide(index);
-}
-
-// زوم در (1.5x)
-function zoomIn() {
-  if (!zoomed) {
-    images[index].style.transform = "scale(1.5)";
-    zoomed = true;
-  }
-}
-
-// زوم بیرون (1x)
-function zoomOut() {
-  if (zoomed) {
-    images[index].style.transform = "scale(1)";
-    zoomed = false;
-  }
-}
-
-// تغییر حالت تمام صفحه
-function toggleFullscreen() {
-  const elem = document.documentElement;
-  if (!document.fullscreenElement) {
-    elem.requestFullscreen().catch(err =>
-      console.error("Fullscreen failed:", err)
-    );
-  } else {
-    document.exitFullscreen();
-  }
-}
-
-// خروج از تمام صفحه با Escape
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && document.fullscreenElement) {
-    document.exitFullscreen();
-  }
-});
-
-// نمایش کنترل‌ها با حرکت موس
-function showControlsTemporarily() {
-  document.body.classList.add("visible-controls");
-  if (hideControlsTimer) clearTimeout(hideControlsTimer);
-  hideControlsTimer = setTimeout(() => {
-    document.body.classList.remove("visible-controls");
-  }, 3000);
-}
-
-document.addEventListener("mousemove", showControlsTemporarily);
-
-// نمایش اسلاید اول در شروع
-showSlide(index);
